@@ -1,0 +1,14 @@
+Detection returns 0 deals despite 161,913 matching rows in the DB.
+
+What we know:
+- selling_realm_id=1316 (Draenor), threshold=0.99, cutoff=NOW()-4h all look correct
+- Raw SQL in DBeaver returns 161,913 rows
+- Python text() query with same params returns 0
+- Replacing :cutoff param with NOW() - INTERVAL '4 hours' directly in SQL did not fix it
+- Suspicion: SQLAlchemy text() parameter binding behaves differently with asyncpg
+
+Next steps to try:
+- Verify selling_realm_id is 1316 (not 1403) at detection time
+- Try bindparams() instead of passing dict to session.execute()
+- Try a simple SELECT COUNT(*) with :selling_id param in Python to isolate param binding
+- Consider rewriting detection query using SQLAlchemy ORM instead of raw text()

@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-wow-dark text-wow-text;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-wow-dark;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-wow-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-wow-gold;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-wow-panel border border-wow-border rounded-lg;
+  }
+
+  .btn {
+    @apply px-3 py-1.5 rounded text-sm font-medium transition-colors;
+  }
+  .btn-gold {
+    @apply btn bg-wow-gold text-wow-dark hover:bg-wow-gold-light;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent border border-wow-border text-wow-text hover:border-wow-gold hover:text-wow-gold;
+  }
+
+  .tier-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider;
+  }
+  .tier-low {
+    @apply tier-badge bg-tier-low/20 text-tier-low border border-tier-low/40;
+  }
+  .tier-medium {
+    @apply tier-badge bg-tier-medium/20 text-tier-medium border border-tier-medium/40;
+  }
+  .tier-ultra {
+    @apply tier-badge bg-tier-ultra/20 text-tier-ultra border border-tier-ultra/40;
+  }
+
+  .input {
+    @apply bg-wow-dark border border-wow-border rounded px-3 py-1.5 text-sm text-wow-text
+           focus:outline-none focus:border-wow-gold transition-colors w-full;
+  }
+}

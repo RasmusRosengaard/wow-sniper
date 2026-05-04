@@ -1,0 +1,28 @@
+# Environment
+backend/.env
+
+# Claude
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Node / Electron
+node_modules/
+client/dist/
+client/dist-electron/
+client/out/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
