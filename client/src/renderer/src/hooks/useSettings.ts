@@ -3,7 +3,6 @@ import type { AppSettings } from '../types'
 
 const DEFAULT_SETTINGS: AppSettings = {
   serverUrl: 'ws://localhost:8000/ws',
-  enabledTiers: { low: true, medium: true, ultra: true },
   watchlistItemIds: [],
   selectedRealmIds: [],
   sellingRealmId: 0,

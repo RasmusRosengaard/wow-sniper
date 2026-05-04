@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Notification, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Notification, shell, nativeImage } from 'electron'
 import { join } from 'path'
 import { JsonStore } from './store'
 
@@ -20,16 +20,21 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   const { width, height } = store.get('windowBounds')
 
+  const iconPath = join(__dirname, '../../resources/icon.ico')
+  let appIcon: Electron.NativeImage | undefined
+  try { appIcon = nativeImage.createFromPath(iconPath) } catch { /* icon not generated yet */ }
+
   mainWindow = new BrowserWindow({
     width,
     height,
     minWidth: 900,
     minHeight: 600,
-    backgroundColor: '#0A0A0F',
+    backgroundColor: '#080C08',
+    icon: appIcon,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#12121C',
-      symbolColor: '#C8A951',
+      color: '#0D1209',
+      symbolColor: '#E8A820',
       height: 32,
     },
     webPreferences: {

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { Snipe } from '../types'
 
 interface RealmPrice {
@@ -10,40 +11,32 @@ interface RealmPrice {
 interface Props {
   snipe: Snipe
   isNew?: boolean
-  hasSellingRealm?: boolean
   baseUrl?: string
 }
 
 function formatGold(copper: number): string {
-  if (copper <= 0) return '0g'
+  if (copper <= 0) return '0 gold'
   const g = Math.floor(copper / 10000)
   const s = Math.floor((copper % 10000) / 100)
-  const c = copper % 100
-  if (g > 0) return `${g.toLocaleString()}g ${s}s`
-  if (s > 0) return `${s}s ${c}c`
-  return `${c}c`
+  if (g > 0) return `${g.toLocaleString('de-DE')} gold`
+  return `${s} silver`
 }
 
-function timeAgo(isoDate: string): string {
-  const secs = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000)
+function timeAgo(iso: string): string {
+  const secs = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
   if (secs < 60) return `${secs}s ago`
   const mins = Math.floor(secs / 60)
   if (mins < 60) return `${mins}m ago`
   return `${Math.floor(mins / 60)}h ago`
 }
 
-const TIME_LEFT_LABELS: Record<string, string> = {
-  SHORT: '< 30m',
-  MEDIUM: '30m–2h',
-  LONG: '2–12h',
-  VERY_LONG: '12h+',
-}
-
-export const SnipeCard: React.FC<Props> = ({ snipe, isNew, hasSellingRealm, baseUrl }) => {
-  const tierClass = `tier-${snipe.tier}` as 'tier-low' | 'tier-medium' | 'tier-ultra'
+export const SnipeCard: React.FC<Props> = ({ snipe, isNew, baseUrl }) => {
   const [expanded, setExpanded] = useState(false)
-  const [prices, setPrices] = useState<RealmPrice[] | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [prices, setPrices]     = useState<RealmPrice[] | null>(null)
+  const [loading, setLoading]   = useState(false)
+
+  const profit    = snipe.market_price - snipe.buyout
+  const profitPct = snipe.discount_pct
 
   const toggle = useCallback(async () => {
     if (expanded) { setExpanded(false); return }
@@ -57,109 +50,127 @@ export const SnipeCard: React.FC<Props> = ({ snipe, isNew, hasSellingRealm, base
     finally { setLoading(false) }
   }, [expanded, prices, baseUrl, snipe.item_id])
 
+  const avg = prices?.length
+    ? Math.round(prices.reduce((s, p) => s + p.min_buyout, 0) / prices.length)
+    : null
+
   return (
-    <div
-      className={`panel transition-all ${isNew ? 'animate-slide-in' : ''} ${
-        snipe.tier === 'ultra' ? 'border-tier-ultra/50' : ''
-      }`}
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
+      whileHover={{ scale: 1.003 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+      className={`panel overflow-hidden cursor-pointer transition-shadow ${isNew ? 'shadow-[0_0_16px_rgba(232,168,32,0.45)]' : ''}`}
+      onClick={toggle}
     >
       {/* Main row */}
-      <div
-        className="p-3 flex gap-3 items-start cursor-pointer select-none"
-        onClick={toggle}
-      >
-        {/* Item icon */}
-        <div className="w-12 h-12 flex-shrink-0 rounded border border-wow-border overflow-hidden bg-black/40">
-          {snipe.icon_url ? (
-            <img src={snipe.icon_url} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-wow-border text-xl">?</div>
-          )}
+      <div className="p-3 flex gap-3 items-center">
+        {/* Icon */}
+        <div className="w-11 h-11 flex-shrink-0 rounded border border-wow-border overflow-hidden bg-black/40">
+          {snipe.icon_url
+            ? <img src={snipe.icon_url} alt="" className="w-full h-full object-cover" />
+            : <div className="w-full h-full flex items-center justify-center text-wow-border text-lg">?</div>
+          }
         </div>
 
-        {/* Content */}
+        {/* Item info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-wow-gold-light font-semibold text-sm truncate">{snipe.item_name}</span>
-            <span className={tierClass}>{snipe.tier}</span>
-            {snipe.quantity > 1 && (
-              <span className="text-xs text-wow-text/60">×{snipe.quantity}</span>
-            )}
+          <div className="text-wow-gold-light font-semibold text-sm truncate leading-tight">
+            {snipe.item_name}
           </div>
-
-          <div className="flex items-center gap-2 mt-1 text-xs text-wow-text/70">
-            <span>{snipe.realm_name}</span>
-            <span>·</span>
-            <span>{TIME_LEFT_LABELS[snipe.time_left] ?? snipe.time_left}</span>
+          <div className="flex items-center gap-1.5 mt-0.5 text-xs text-wow-text-dim">
+            <span className="truncate">{snipe.realm_name}</span>
             <span>·</span>
             <span>{timeAgo(snipe.detected_at)}</span>
           </div>
+          <div className="flex items-center gap-3 mt-1.5 text-xs">
+            <span className="text-wow-text-dim">
+              Buy <span className="text-wow-text font-mono">{formatGold(snipe.buyout)}</span>
+            </span>
+            <span className="text-wow-text-dim">
+              Sell <span className="text-wow-text font-mono">{formatGold(snipe.market_price)}</span>
+            </span>
+          </div>
+        </div>
 
-          <div className="flex items-center gap-4 mt-2">
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-wow-text/50">Buy</div>
-              <div className="text-sm font-bold text-white">{formatGold(snipe.buyout)}</div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-wow-text/50">
-                {hasSellingRealm ? 'Sell (your realm)' : 'Market avg'}
-              </div>
-              <div className="text-sm text-wow-text/80">{formatGold(snipe.market_price)}</div>
-            </div>
-            {snipe.market_price > snipe.buyout && (
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-wow-text/50">Profit</div>
-                <div className="text-sm font-semibold text-tier-low">
-                  +{formatGold(snipe.market_price - snipe.buyout)}
-                </div>
-              </div>
-            )}
-            <div className="ml-auto flex items-center gap-2">
-              <div
-                className={`text-2xl font-bold ${
-                  snipe.tier === 'ultra'
-                    ? 'text-tier-ultra'
-                    : snipe.tier === 'medium'
-                    ? 'text-tier-medium'
-                    : 'text-tier-low'
-                }`}
-              >
-                -{snipe.discount_pct.toFixed(0)}%
-              </div>
-              <span className="text-wow-text/30 text-xs">{expanded ? '▲' : '▼'}</span>
-            </div>
+        {/* Profit — hero metric */}
+        <div className="flex-shrink-0 text-right min-w-[80px]">
+          {profit > 0 && (
+            <motion.div
+              key={snipe.buyout}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-emerald-400 font-bold text-base leading-tight font-mono"
+            >
+              +{formatGold(profit)}
+            </motion.div>
+          )}
+          <div className="text-wow-gold font-bold text-xl leading-tight tabular-nums">
+            -{profitPct.toFixed(0)}%
+          </div>
+          <div className="text-wow-text-dim text-[10px] mt-0.5 select-none">
+            {expanded ? '▲' : '▼'}
           </div>
         </div>
       </div>
 
-      {/* Realm price list */}
-      {expanded && (
-        <div className="border-t border-wow-border/50 px-3 py-2">
-          {loading && <div className="text-xs text-wow-text/40 py-1">Loading prices…</div>}
-          {!loading && prices && (
-            <div className="space-y-0.5 max-h-48 overflow-y-auto">
-              <div className="grid grid-cols-[1fr_auto] text-[10px] uppercase tracking-wider text-wow-text/40 pb-1">
-                <span>Realm</span>
-                <span className="text-right">Min buyout</span>
-              </div>
-              {prices.map((p, i) => (
-                <div
-                  key={p.realm_id}
-                  className={`grid grid-cols-[1fr_auto] text-xs py-0.5 ${
-                    p.realm_id === snipe.realm_id ? 'text-wow-gold' : 'text-wow-text/70'
-                  }`}
-                >
-                  <span className="truncate pr-4">
-                    {i === 0 && <span className="text-tier-low mr-1">★</span>}
-                    {p.realm_name}
-                  </span>
-                  <span className="font-mono tabular-nums">{formatGold(p.min_buyout)}</span>
+      {/* Realm price breakdown */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-wow-border/40 px-3 py-2">
+              {loading && (
+                <div className="text-xs text-wow-text-dim py-1 animate-pulse">Loading prices…</div>
+              )}
+              {!loading && prices && (
+                <div className="max-h-52 overflow-y-auto">
+                  {/* Header */}
+                  <div className="grid grid-cols-[1fr_auto] text-[10px] uppercase tracking-wider text-wow-text-dim pb-1.5 border-b border-wow-border/30">
+                    <span>Realm ({prices.length})</span>
+                    <span className="text-right flex items-center gap-2 justify-end">
+                      {avg !== null && (
+                        <span>
+                          Avg <span className="text-wow-gold/70 font-mono normal-case">{formatGold(avg)}</span>
+                          <span className="mx-1.5 opacity-40">·</span>
+                        </span>
+                      )}
+                      Cheapest buyout
+                    </span>
+                  </div>
+                  {/* Rows */}
+                  <div className="space-y-0.5 mt-1">
+                    {prices.map((p, i) => (
+                      <motion.div
+                        key={p.realm_id}
+                        initial={{ opacity: 0, x: -4 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.012, duration: 0.15 }}
+                        className={`grid grid-cols-[1fr_auto] text-xs py-0.5 ${
+                          p.realm_id === snipe.realm_id ? 'text-wow-gold' : 'text-wow-text/70'
+                        }`}
+                      >
+                        <span className="truncate pr-4 flex items-center gap-1.5">
+                          {i === 0 && <span className="text-emerald-400 text-[10px]">★</span>}
+                          {p.realm_name}
+                        </span>
+                        <span className="font-mono tabular-nums">{formatGold(p.min_buyout)}</span>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }

@@ -1,88 +1,80 @@
 import React from 'react'
-import type { Tier } from '../types'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type View = 'feed' | 'watchlist' | 'settings'
 
 interface Props {
   activeView: View
   onViewChange: (v: View) => void
-  tierCounts: Record<Tier, number>
-  enabledTiers: { low: boolean; medium: boolean; ultra: boolean }
-  onTierToggle: (tier: Tier) => void
+  snipeCount: number
 }
 
-const TIERS: { tier: Tier; label: string; color: string; bg: string }[] = [
-  { tier: 'ultra', label: 'Ultra', color: 'text-tier-ultra', bg: 'bg-tier-ultra/10 border-tier-ultra/30' },
-  { tier: 'medium', label: 'Medium', color: 'text-tier-medium', bg: 'bg-tier-medium/10 border-tier-medium/30' },
-  { tier: 'low', label: 'Low', color: 'text-tier-low', bg: 'bg-tier-low/10 border-tier-low/30' },
+const NAV: { view: View; label: string; icon: string }[] = [
+  { view: 'feed',      label: 'Sniper',    icon: '🪙' },
+  { view: 'watchlist', label: 'Watchlist', icon: '📋' },
+  { view: 'settings',  label: 'Settings',  icon: '⚙️' },
 ]
 
-export const Sidebar: React.FC<Props> = ({
-  activeView,
-  onViewChange,
-  tierCounts,
-  enabledTiers,
-  onTierToggle,
-}) => {
+export const Sidebar: React.FC<Props> = ({ activeView, onViewChange, snipeCount }) => {
   return (
-    <div className="w-52 flex-shrink-0 bg-wow-panel border-r border-wow-border flex flex-col">
-      {/* Logo */}
-      <div className="px-4 py-4 border-b border-wow-border">
-        <div className="font-wow text-wow-gold text-lg tracking-widest">WoW Sniper</div>
-        <div className="text-[10px] text-wow-text/40 uppercase tracking-wider mt-0.5">
-          Auction House
+    <div className="w-48 flex-shrink-0 bg-wow-panel border-r border-wow-border flex flex-col">
+      {/* Branding */}
+      <div className="px-4 py-5 border-b border-wow-border">
+        <div className="font-wow text-wow-gold text-base tracking-widest leading-tight">
+          WoW Sniper
+        </div>
+        <div className="text-[10px] text-wow-text-dim uppercase tracking-widest mt-1">
+          Gold Goblin Edition
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="p-2 space-y-1">
-        {(
-          [
-            { view: 'feed' as View, label: 'Live Feed', icon: '⚡' },
-            { view: 'watchlist' as View, label: 'Watchlist', icon: '⭐' },
-            { view: 'settings' as View, label: 'Settings', icon: '⚙️' },
-          ] as const
-        ).map(({ view, label, icon }) => (
-          <button
+      {/* Nav */}
+      <nav className="p-2 space-y-0.5 mt-1">
+        {NAV.map(({ view, label, icon }) => (
+          <motion.button
             key={view}
             onClick={() => onViewChange(view)}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded text-sm transition-colors text-left ${
+            whileHover={{ x: 2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded text-sm transition-colors text-left relative ${
               activeView === view
                 ? 'bg-wow-gold/10 text-wow-gold border border-wow-gold/20'
-                : 'text-wow-text/70 hover:bg-white/5 hover:text-wow-text'
+                : 'text-wow-text/60 hover:bg-wow-panel-hi hover:text-wow-text border border-transparent'
             }`}
           >
-            <span>{icon}</span>
-            <span>{label}</span>
-          </button>
+            {activeView === view && (
+              <motion.div
+                layoutId="nav-pill"
+                className="absolute inset-0 rounded bg-wow-gold/10 border border-wow-gold/20"
+                transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+              />
+            )}
+            <span className="text-base leading-none relative z-10">{icon}</span>
+            <span className="relative z-10">{label}</span>
+          </motion.button>
         ))}
       </nav>
 
-      {/* Tier toggles */}
-      <div className="mt-4 px-3">
-        <div className="text-[10px] uppercase tracking-wider text-wow-text/40 mb-2 px-1">
-          Tiers
-        </div>
-        <div className="space-y-1.5">
-          {TIERS.map(({ tier, label, color, bg }) => {
-            const on = enabledTiers[tier]
-            return (
-              <button
-                key={tier}
-                onClick={() => onTierToggle(tier)}
-                className={`w-full flex items-center justify-between px-3 py-1.5 rounded border text-sm transition-all ${
-                  on ? bg : 'border-transparent opacity-40 hover:opacity-60'
-                }`}
-              >
-                <span className={`font-medium ${on ? color : 'text-wow-text/50'}`}>{label}</span>
-                <span className="text-xs text-wow-text/50">{tierCounts[tier]}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
       <div className="flex-1" />
+
+      {/* Hoard counter */}
+      <div className="px-4 py-4 border-t border-wow-border">
+        <div className="text-[10px] uppercase tracking-wider text-wow-text-dim mb-1">
+          Deals found
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={snipeCount}
+            initial={{ opacity: 0, y: -6, scale: 1.1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+            className="font-wow text-wow-gold-light text-xl tabular-nums"
+          >
+            {snipeCount.toLocaleString()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

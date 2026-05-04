@@ -9,8 +9,8 @@ interface Props {
 function copper(c: number): string {
   const gold = Math.floor(c / 10000)
   const silver = Math.floor((c % 10000) / 100)
-  if (gold >= 1000) return `${(gold / 1000).toFixed(1)}k g`
-  return gold > 0 ? `${gold}g ${silver}s` : `${silver}s`
+  if (gold > 0) return `${gold.toLocaleString('de-DE')} gold`
+  return `${silver} silver`
 }
 
 function profitColor(pct: number): string {

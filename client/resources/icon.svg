@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="90%">
+      <stop offset="0%"   stop-color="#162012"/>
+      <stop offset="100%" stop-color="#080C08"/>
+    </radialGradient>
+    <radialGradient id="coin" cx="38%" cy="32%" r="68%">
+      <stop offset="0%"   stop-color="#FFE566"/>
+      <stop offset="45%"  stop-color="#E8A820"/>
+      <stop offset="100%" stop-color="#A06B08"/>
+    </radialGradient>
+    <radialGradient id="shine" cx="35%" cy="28%" r="50%">
+      <stop offset="0%"   stop-color="#FFFFF0" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#FFFFF0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="drop" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="28" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="1024" height="1024" rx="210" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="210" fill="none" stroke="#1E2A16" stroke-width="3"/>
+
+  <!-- Coin drop shadow -->
+  <circle cx="512" cy="528" r="388" fill="#3A2004" opacity="0.55"/>
+
+  <!-- Coin body -->
+  <circle cx="512" cy="512" r="388" fill="url(#coin)" filter="url(#drop)"/>
+
+  <!-- Coin outer rim -->
+  <circle cx="512" cy="512" r="388" fill="none" stroke="#7A5208" stroke-width="20"/>
+
+  <!-- Inner decorative ring -->
+  <circle cx="512" cy="512" r="324" fill="none" stroke="#9B7218" stroke-width="6" stroke-dasharray="10 6" opacity="0.65"/>
+
+  <!-- "G" letterform -->
+  <text
+    x="512" y="672"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="468"
+    font-weight="bold"
+    text-anchor="middle"
+    fill="#7A5208"
+    opacity="0.88"
+  >G</text>
+
+  <!-- Shine overlay for 3-D coin look -->
+  <circle cx="512" cy="512" r="388" fill="url(#shine)"/>
+
+  <!-- Top-left highlight ellipse -->
+  <ellipse cx="385" cy="368" rx="128" ry="76"
+    fill="rgba(255,252,210,0.20)"
+    transform="rotate(-28 385 368)"/>
+</svg>

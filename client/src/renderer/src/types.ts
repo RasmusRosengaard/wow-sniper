@@ -1,4 +1,4 @@
-export type Tier = 'low' | 'medium' | 'ultra'
+export type Tier = 'low' | 'medium' | 'ultra' // backend classification, not shown in UI
 
 export interface Snipe {
   id?: number
@@ -27,7 +27,6 @@ export interface Realm {
 
 export interface AppSettings {
   serverUrl: string
-  enabledTiers: { low: boolean; medium: boolean; ultra: boolean }
   watchlistItemIds: number[]
   selectedRealmIds: number[]
   sellingRealmId: number

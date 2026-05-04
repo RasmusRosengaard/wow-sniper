@@ -6,37 +6,41 @@ module.exports = {
     extend: {
       colors: {
         wow: {
-          gold: '#C8A951',
-          'gold-light': '#FFD700',
-          dark: '#0A0A0F',
-          panel: '#12121C',
-          border: '#2A2A3E',
-          text: '#C6C6C6',
+          gold:        '#E8A820',
+          'gold-light':'#F5C518',
+          'gold-dim':  '#9B7218',
+          dark:        '#080C08',
+          panel:       '#0D1209',
+          'panel-hi':  '#131A0F',
+          border:      '#1A2416',
+          'border-hi': '#2A3822',
+          text:        '#C0C49A',
+          'text-dim':  '#6A6E52',
         },
-        tier: {
-          low: '#22c55e',
-          medium: '#eab308',
-          ultra: '#ef4444',
-        }
       },
       fontFamily: {
         wow: ['"Cinzel"', 'serif'],
       },
       animation: {
-        'slide-in': 'slideIn 0.3s ease-out',
+        'slide-in':   'slideIn 0.25s ease-out',
         'pulse-gold': 'pulseGold 2s ease-in-out infinite',
+        'fade-in':    'fadeIn 0.2s ease-out',
       },
       keyframes: {
         slideIn: {
-          '0%': { transform: 'translateX(-10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
+          '0%':   { transform: 'translateX(-8px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)',     opacity: '1' },
+        },
+        fadeIn: {
+          '0%':   { opacity: '0' },
+          '100%': { opacity: '1' },
         },
         pulseGold: {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(200,169,81,0.3)' },
-          '50%': { boxShadow: '0 0 20px rgba(200,169,81,0.8)' },
-        }
-      }
-    }
+          '0%, 100%': { boxShadow: '0 0 6px rgba(232,168,32,0.25)' },
+          '50%':      { boxShadow: '0 0 18px rgba(232,168,32,0.65)' },
+        },
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 }

@@ -16,50 +16,46 @@
     user-select: none;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-wow-dark;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-wow-border rounded-full;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-wow-gold;
-  }
+  ::-webkit-scrollbar       { width: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-wow-dark; }
+  ::-webkit-scrollbar-thumb { @apply bg-wow-border rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-wow-gold-dim; }
 }
 
 @layer components {
+  /* Cards / panels */
   .panel {
     @apply bg-wow-panel border border-wow-border rounded-lg;
   }
+  .panel-hi {
+    @apply bg-wow-panel-hi border border-wow-border-hi rounded-lg;
+  }
 
+  /* Buttons */
   .btn {
-    @apply px-3 py-1.5 rounded text-sm font-medium transition-colors;
+    @apply px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer;
   }
   .btn-gold {
-    @apply btn bg-wow-gold text-wow-dark hover:bg-wow-gold-light;
+    @apply btn bg-wow-gold text-wow-dark font-semibold hover:bg-wow-gold-light;
   }
   .btn-ghost {
-    @apply btn bg-transparent border border-wow-border text-wow-text hover:border-wow-gold hover:text-wow-gold;
+    @apply btn bg-transparent border border-wow-border text-wow-text/70
+           hover:border-wow-gold/50 hover:text-wow-gold;
   }
 
-  .tier-badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider;
-  }
-  .tier-low {
-    @apply tier-badge bg-tier-low/20 text-tier-low border border-tier-low/40;
-  }
-  .tier-medium {
-    @apply tier-badge bg-tier-medium/20 text-tier-medium border border-tier-medium/40;
-  }
-  .tier-ultra {
-    @apply tier-badge bg-tier-ultra/20 text-tier-ultra border border-tier-ultra/40;
-  }
-
+  /* Form inputs */
   .input {
     @apply bg-wow-dark border border-wow-border rounded px-3 py-1.5 text-sm text-wow-text
-           focus:outline-none focus:border-wow-gold transition-colors w-full;
+           focus:outline-none focus:border-wow-gold/60 transition-colors w-full placeholder:text-wow-text-dim;
+  }
+
+  /* Profit / loss colours (used directly, no tier concept in UI) */
+  .profit-text  { @apply text-emerald-400; }
+  .loss-text    { @apply text-red-400; }
+  .coin-text    { @apply text-wow-gold-light; }
+
+  /* Separator */
+  .dot-sep {
+    @apply text-wow-text-dim;
   }
 }
